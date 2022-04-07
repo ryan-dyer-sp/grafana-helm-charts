@@ -257,3 +257,4 @@ Cluster name that shows up in dashboard metrics
     {{- print "policy/v1beta1" -}}
   {{- end -}}
 {{- end -}}
+
