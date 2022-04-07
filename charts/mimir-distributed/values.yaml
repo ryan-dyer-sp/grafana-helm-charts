@@ -782,6 +782,20 @@ query_frontend:
 store_gateway:
   replicas: 1
 
+  rollout_operator:
+    enabled: false
+    max_unavailable: 10
+    zones:
+    - name: zone-a
+      nodeSelector:
+        topology.kubernetes.io/zone: zone-a
+    - name: zone-b
+      nodeSelector:
+        topology.kubernetes.io/zone: zone-b
+    - name: zone-c
+      nodeSelector:
+        topology.kubernetes.io/zone: zone-c
+
   service:
     annotations: {}
     labels: {}
@@ -805,6 +819,7 @@ store_gateway:
     maxUnavailable: 1
 
   nodeSelector: {}
+
   affinity:
     podAntiAffinity:
       requiredDuringSchedulingIgnoredDuringExecution:
