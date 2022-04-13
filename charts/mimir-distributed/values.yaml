@@ -789,12 +789,28 @@ store_gateway:
     - name: zone-a
       nodeSelector:
         topology.kubernetes.io/zone: zone-a
+      affinity: {}
+        # podAntiAffinity:
+        #   requiredDuringSchedulingIgnoredDuringExecution:
+        #     - labelSelector:
+        #         matchExpressions:
+        #           - key: target
+        #             operator: In
+        #             values:
+        #               - store-gateway
+        #           - key: target
+        #             operator: NotIn
+        #             values:
+        #               - store-gateway-zone-a
+        #       topologyKey: 'kubernetes.io/hostname'
     - name: zone-b
       nodeSelector:
         topology.kubernetes.io/zone: zone-b
+      affinity: {}
     - name: zone-c
       nodeSelector:
         topology.kubernetes.io/zone: zone-c
+      affinity: {}
 
   service:
     annotations: {}

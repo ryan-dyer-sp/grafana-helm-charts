@@ -1,4 +1,4 @@
-{{- $rolloutZones := list (dict "name" "" "nodeSelector" (dict)) -}}
+{{- $rolloutZones := list (dict "name" "" "nodeSelector" (dict) "affinity" (dict)) -}}
 {{- if .Values.store_gateway.rollout_operator.enabled -}}
 {{- $rolloutZones = .Values.store_gateway.rollout_operator.zones }}
 {{- end -}}
@@ -10,7 +10,7 @@ kind: StatefulSet
 metadata:
   name: {{ include "mimir.storeGatewayZonename" . }}
   labels:
-    {{- include "mimir.labels" (dict "ctx" . "component" "store-gateway" "memberlist" true) | nindent 4 }}
+    {{- include "mimir.storeGatewayZoneLabels" . | nindent 4 }}
   annotations:
     {{- include "mimir.storeGatewayAnnotations" . | nindent 4 }}
 spec:
@@ -23,6 +23,7 @@ spec:
     type: OnDelete
     {{- else }}
     {{- toYaml .Values.store_gateway.strategy | nindent 4 }}
+    {{- end }}
   serviceName: {{ template "mimir.fullname" . }}-store-gateway{{- if not .Values.enterprise.legacyLabels -}}-headless{{- end -}}
   {{- if .Values.store_gateway.persistentVolume.enabled }}
   volumeClaimTemplates:
@@ -75,9 +76,9 @@ spec:
       {{- end }}
       {{- end }}
       nodeSelector:
-        {{- toYaml ( deepCopy $rolloutZone.nodeSelector | mergeOverwrite .Values.store_gateway.nodeSelector ) | nindent 8 }}
+        {{- toYaml ( deepCopy .Values.store_gateway.nodeSelector | merge  $rolloutZone.nodeSelector ) | nindent 8 }}
       affinity:
-        {{- toYaml .Values.store_gateway.affinity | nindent 8 }}
+        {{- toYaml ( deepCopy .Values.store_gateway.affinity | merge  $rolloutZone.affinity) | nindent 8 }}
       tolerations:
         {{- toYaml .Values.store_gateway.tolerations | nindent 8 }}
       terminationGracePeriodSeconds: {{ .Values.store_gateway.terminationGracePeriodSeconds }}
