@@ -1,6 +1,6 @@
 {{- $rolloutZones := list (dict "name" "" "nodeSelector" (dict) "affinity" (dict)) -}}
-{{- if .Values.store_gateway.rollout_operator.enabled -}}
-{{- $rolloutZones = .Values.store_gateway.rollout_operator.zones }}
+{{- if (default .Values.global.rollout_operator.enabled .Values.store_gateway.rollout_operator.enabled) -}}
+{{- $rolloutZones = (default .Values.global.rollout_operator.zones .Values.store_gateway.rollout_operator.zones)}}
 {{- end -}}
 {{- range $idx, $rolloutZone := $rolloutZones }}
 {{- with $ -}}
