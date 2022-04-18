@@ -1,9 +1,16 @@
+{{- $rolloutZones := list (dict "name" "" "nodeSelector" (dict)) -}}
+{{- if .Values.ingester.rollout_operator.enabled -}}
+{{- $rolloutZones = .Values.ingester.rollout_operator.zones }}
+{{- end -}}
+{{- range $idx, $rolloutZone := $rolloutZones }}
+{{- with $ -}}
+{{- $_ := set . "rolloutZone" $rolloutZone -}}
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "mimir.resourceName" (dict "ctx" . "component" "ingester") }}
+  name: {{ include "mimir.ingesterZonename" . }}
   labels:
-    {{- include "mimir.labels" (dict "ctx" . "component" "ingester" "memberlist" true) | nindent 4 }}
+    {{- include "mimir.ingesterZoneLabels" . | nindent 4 }}
     {{- with .Values.ingester.service.labels }}
     {{- toYaml . | nindent 4 }}
     {{- end }}
@@ -21,4 +28,8 @@ spec:
       name: grpc
       targetPort: grpc
   selector:
-    {{- include "mimir.selectorLabels" (dict "ctx" . "component" "ingester" "memberlist" true) | nindent 4 }}
+    {{- include "mimir.ingesterZoneSelectorLabels" . | nindent 4 }}
+
+---
+{{- end -}}
+{{- end -}}
